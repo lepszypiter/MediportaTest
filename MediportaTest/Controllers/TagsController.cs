@@ -18,12 +18,12 @@ public class TagsController : ControllerBase
 
     }
 
-    // GET: api/Client
+    // GET: api/Tags
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Tag>>> GetTags()
     {
         _logger.LogInformation("GET: GetAllTags");
-        var clients = await _tagsRepository.GetAllTags();
-        return Ok(clients);
+        var tags = await _tagsRepository.GetAllTags();
+        return Ok(tags);
     }
 }
