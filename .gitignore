@@ -1,3 +1,5 @@
 /MediportaTest/bin/
 /MediportaTest/obj/
 .idea
+**/*.db
+**/*.db-*
