@@ -4,15 +4,16 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MediportaTest.Controllers;
 
+[Route("api/[controller]")]
 [ApiController]
 public class TagsController : ControllerBase
 {
-    private readonly ITagsRepository _clientRepository;
+    private readonly ITagsRepository _tagsRepository;
     private readonly ILogger _logger;
 
-    public TagsController(ITagsRepository clientRepository, ILogger<TagsController> logger)
+    public TagsController(ITagsRepository tagsRepository, ILogger<TagsController> logger)
     {
-        _clientRepository = clientRepository;
+        _tagsRepository = tagsRepository;
         _logger = logger;
 
     }
@@ -22,7 +23,7 @@ public class TagsController : ControllerBase
     public async Task<ActionResult<IEnumerable<Tag>>> GetTags()
     {
         _logger.LogInformation("GET: GetAllTags");
-        var clients = await _clientRepository.GetAllTags();
+        var clients = await _tagsRepository.GetAllTags();
         return Ok(clients);
     }
 }
