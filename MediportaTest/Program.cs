@@ -10,6 +10,7 @@ builder.Services.AddDbContext<TagsDBContext>(opt =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ITagsRepository, TagsRepository>();
+builder.Services.AddScoped<TagFetcher>();
 
 var app = builder.Build();
 

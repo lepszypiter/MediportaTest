@@ -15,7 +15,6 @@ public class TagsController : ControllerBase
     {
         _tagsRepository = tagsRepository;
         _logger = logger;
-
     }
 
     // GET: api/Tags
