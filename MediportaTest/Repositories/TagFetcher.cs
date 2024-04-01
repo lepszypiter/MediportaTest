@@ -8,7 +8,8 @@ namespace MediportaTest.Repositories;
 
 public class TagFetcher
 {
-    private readonly TagsDBContext _context;
+    const int TagsCount = 1000;
+    private readonly TagsDBContext _context; 
     private readonly HttpClient _client = new HttpClient(new HttpClientHandler() { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate }); 
     
     public TagFetcher(TagsDBContext context)
@@ -19,8 +20,13 @@ public class TagFetcher
     public async Task Fetch()
     {
         var count = await _context.Tags.CountAsync();
+        if (count >= TagsCount)
+        {
+            return;
+        }
+        await RemoveAll();
         var page = 1;
-        while (count < 1000)
+        while (count < TagsCount)
         {
             var tags = await ReadTags(page);
             await SaveTags(tags);
@@ -28,6 +34,7 @@ public class TagFetcher
             page++;
             count += tags.Items.Length;
         }
+        await CalculatePercent();
     }
 
     private async Task<SOTags> ReadTags(int page)
@@ -57,6 +64,16 @@ public class TagFetcher
             _context.Tags.Add(tag);
         }
 
+        await _context.SaveChangesAsync();
+    }
+
+    private async Task CalculatePercent()
+    {
+        var sum = await _context.Tags.SumAsync(t => t.Count);
+        foreach (var tag in _context.Tags)
+        {
+            tag.Percent = (decimal)tag.Count / sum * 100;
+        }
         await _context.SaveChangesAsync();
     }
 
