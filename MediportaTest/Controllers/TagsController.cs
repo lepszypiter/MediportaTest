@@ -29,6 +29,15 @@ public class TagsController : ControllerBase
         var tags = await _tagsRepository.GetAllTags(pageSize, page, order, sort);
         return Ok(tags);
     }
+    // Force refresh of the tags
+    // GET: api/Tags/Refresh
+    [HttpPost("Refresh")]
+    public async Task<ActionResult> RefreshTags()
+    {
+        _logger.LogInformation("GET: RefreshTags");
+        await _tagsRepository.RefreshTags();
+        return Ok();
+    }
 }
 
 public enum TagSort
@@ -42,3 +51,4 @@ public enum TagOrder
     Asc,
     Desc
 }
+    

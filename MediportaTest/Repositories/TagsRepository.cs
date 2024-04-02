@@ -36,4 +36,10 @@ class TagsRepository : ITagsRepository
         _logger.LogTrace("GetAllTags {Count}",  result.Count);
         return result;
     }
+
+    public async Task RefreshTags()
+    {
+        await _tagFetcher.RemoveAll();
+        await _tagFetcher.Fetch();
+    }
 }
