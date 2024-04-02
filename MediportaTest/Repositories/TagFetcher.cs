@@ -72,7 +72,7 @@ public class TagFetcher
         var sum = await _context.Tags.SumAsync(t => t.Count);
         foreach (var tag in _context.Tags)
         {
-            tag.Percent = (decimal)tag.Count / sum * 100;
+            tag.Percent = (double)tag.Count / sum * 100;
         }
         await _context.SaveChangesAsync();
     }
