@@ -1,4 +1,5 @@
 using MediportaTest.Context;
+using MediportaTest.Controllers;
 using MediportaTest.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,10 +17,22 @@ class TagsRepository : ITagsRepository
         _tagFetcher = tagFetcher;
     }
     
-    public async Task<IReadOnlyCollection<Tag>> GetAllTags()
+    public async Task<IReadOnlyCollection<Tag>> GetAllTags(int pageSize, int page, TagOrder order, TagSort sort)
     {
+        int skip = pageSize * (page - 1);
         await _tagFetcher.Fetch();
-        var result = await _context.Tags.Take(15).ToListAsync();
+        IQueryable<Tag> query = _context.Tags;
+        if (sort == TagSort.Percent)
+        {
+            query = order == TagOrder.Asc ? query.OrderBy(x => x.Percent) : query.OrderByDescending(x => x.Percent);
+        }
+        else
+        {
+            query = order == TagOrder.Desc ? query.OrderByDescending(x => x.Name) : query.OrderBy(x => x.Name);
+        }
+        
+        
+        var result = await query.Skip(skip).Take(pageSize).ToListAsync();
         _logger.LogTrace("GetAllTags {Count}",  result.Count);
         return result;
     }

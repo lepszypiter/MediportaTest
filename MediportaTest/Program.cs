@@ -1,10 +1,12 @@
+using System.Text.Json.Serialization;
 using MediportaTest.Context;
 using MediportaTest.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(opt=> { opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 builder.Services.AddDbContext<TagsDBContext>(opt =>
     opt.UseSqlite("Data Source=tags.db"));
 builder.Services.AddEndpointsApiExplorer();

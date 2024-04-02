@@ -19,10 +19,26 @@ public class TagsController : ControllerBase
 
     // GET: api/Tags
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Tag>>> GetTags()
+    public async Task<ActionResult<IEnumerable<Tag>>> GetTags(
+        int pageSize = 100,
+        int page = 1,
+        TagOrder order = TagOrder.Asc,
+        TagSort sort = TagSort.Name)
     {
         _logger.LogInformation("GET: GetAllTags");
-        var tags = await _tagsRepository.GetAllTags();
+        var tags = await _tagsRepository.GetAllTags(pageSize, page, order, sort);
         return Ok(tags);
     }
+}
+
+public enum TagSort
+{
+    Name,
+    Percent
+}
+
+public enum TagOrder
+{
+    Asc,
+    Desc
 }
