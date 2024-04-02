@@ -9,12 +9,16 @@ namespace MediportaTest.Repositories;
 public class TagFetcher
 {
     const int TagsCount = 1000;
-    private readonly TagsDBContext _context; 
-    private readonly HttpClient _client = new HttpClient(new HttpClientHandler() { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate }); 
-    
-    public TagFetcher(TagsDBContext context)
+    private readonly ILogger _logger;
+    private readonly TagsDBContext _context;
+
+    private readonly HttpClient _client = new HttpClient(new HttpClientHandler()
+        { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate });
+
+    public TagFetcher(TagsDBContext context, ILogger<TagFetcher> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
     public async Task Fetch()
@@ -24,16 +28,19 @@ public class TagFetcher
         {
             return;
         }
+
+        _logger.LogInformation("Fetching tags");
         await RemoveAll();
         var page = 1;
         while (count < TagsCount)
         {
             var tags = await ReadTags(page);
             await SaveTags(tags);
-            
+
             page++;
             count += tags.Items.Length;
         }
+
         await CalculatePercent();
     }
 
@@ -44,9 +51,7 @@ public class TagFetcher
         var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
         var response = await _client.SendAsync(request);
         response.EnsureSuccessStatusCode();
-
-        Console.WriteLine(await response.Content.ReadAsStringAsync());
-
+        _logger.LogDebug("Read tags page {Page}", page);
         var tags = JsonSerializer.Deserialize<SOTags>(await response.Content.ReadAsStringAsync());
         return tags;
     }
@@ -74,6 +79,7 @@ public class TagFetcher
         {
             tag.Percent = (double)tag.Count / sum * 100;
         }
+
         await _context.SaveChangesAsync();
     }
 
@@ -81,8 +87,6 @@ public class TagFetcher
     {
         // Remove all tags
         await _context.Database.ExecuteSqlRawAsync("DELETE FROM Tags");
-        
+        _logger.LogInformation("All tags removed");
     }
-    
 }
-
