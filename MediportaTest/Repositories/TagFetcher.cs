@@ -79,7 +79,7 @@ public class TagFetcher
         {
             tag.Percent = (double)tag.Count / sum * 100;
         }
-
+        _logger.LogInformation("Calculating percent");
         await _context.SaveChangesAsync();
     }
 
