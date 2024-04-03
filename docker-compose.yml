@@ -1,0 +1,10 @@
+﻿version: '3.4'
+
+services:
+  webapi:
+    image: webapi
+    build:
+      context: .
+      dockerfile: MediportaTest/Dockerfile
+    ports:
+      - "8080:8080"
